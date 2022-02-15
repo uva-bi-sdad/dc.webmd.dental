@@ -1,0 +1,142 @@
+---
+title: "catchment_scores"
+author: "--"
+date: "2/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# libraries
+```{r}
+library(catchment)
+library(sf)
+library(leaflet)
+library(dplyr)
+```
+# start new
+```{r}
+ rm(list=ls())
+```
+#working directory
+```{r}
+setwd("~/VDH/Floating_Catchment_Areas/dmv/3. dentists_dmv_model/")
+```
+# read data
+```{r}
+population <- read.csv("population.csv")
+provider <- read.csv("provider.csv")
+rownames(provider) <- provider$ID
+traveltimes <- read.csv("traveltimes_trimmed.csv", row.names = 1)
+```
+# prepare map
+```{r}
+blockgroup_shapes <- st_transform(read_sf("blockgroups.geojson", as_tibble = FALSE), 4326)
+rownames(blockgroup_shapes) <- blockgroup_shapes$GEOID
+blockgroup_shapes <- blockgroup_shapes[as.character(population$GEOID),]
+##new
+shape_counties <- tigris::counties(state = c("VA", "MD", "DC"), class = "sf")
+shape_counties_dmv <- shape_counties %>% filter(GEOID == 51013 | GEOID ==51059 | GEOID == 51600 | GEOID == 51107 | GEOID == 51610 | GEOID == 51683 | 
+                                                  GEOID == 51685 | GEOID == 51153 | GEOID == 51510 | GEOID == 11001 | GEOID ==  24021 | GEOID == 24031 | GEOID == 24033 | GEOID == 24017) 
+#format for counties
+shape_counties_dmv <- st_transform(shape_counties_dmv, 4326 )
+
+#create map
+map <- leaflet(blockgroup_shapes, options = leafletOptions(attributionControl = FALSE)) %>%
+  addTiles() %>%
+  addScaleBar("bottomleft") %>%
+  addMapPane("lines", zIndex = 410) %>%
+  addMapPane("points", zIndex = 411) %>%
+  addPolygons(
+    fillColor = colorNumeric("RdYlBu", population$population)(population$population),
+    fillOpacity = 1, stroke = FALSE, group = "Population", label = population$pediatric_pop
+  ) %>%
+  hideGroup("Population") %>%
+  addLayersControl(
+    position = "topleft", overlayGroups = c("Pediatrics", "Population", "Access")
+  ) %>%
+  addCircles(
+    data = provider, color = "blue", lng = ~lon, lat = ~lat, weight = 3,
+    label = ~ paste0("ID: ", ID), group = "ObGyns", options = pathOptions(pane = "points")
+  )
+```
+# calculate and display catchment areas
+## 2-step
+```{r}
+population$providers_2sfca <- catchment_ratio(
+  population, provider, traveltimes, 30,
+  consumers_value = "pediatric_pop", providers_id = "ID", providers_value = "doctors", verbose = TRUE
+) * 1000
+
+pal <- colorBin("RdYlBu", population$providers_2sfca)
+
+plot_2sfca <- map %>%
+  addControl("Pediatrics Per 1,000 People (2-Step Floating Catchment Area)", "topright") %>%
+  addLegend("bottomright", pal, population$providers_2sfca, opacity = .7) %>%
+  addPolygons(
+    fillColor = pal(population$providers_2sfca), fillOpacity = .7, weight = 1, color = "#000",
+    highlightOptions = highlightOptions(color = "#fff"), group = "Access",
+    label = paste0(
+      "GEOID: ", population$GEOID, ", Population Ages 0-17: ", population$population,
+      ", Per 1k People: ", round(population$providers_2sfca, 4), ", In Region: ",
+      round(population$population * population$providers_2sfca / 1000, 4)
+    )
+  ) %>%
+  addPolylines(data = shape_counties_dmv, color = "black", opacity = 1, weight = 2.5) 
+```
+## enhanced 2-step
+```{r}
+weight <- list(c(60, .042), c(30, .377), c(20, .704), c(10, .962))
+population$providers_e2sfca <- catchment_ratio(
+  population, provider, traveltimes, weight,
+  consumers_value = "pediatric_pop", providers_id = "ID", providers_value = "doctors", verbose = TRUE
+) * 1000
+
+pal <- colorBin("RdYlBu", population$providers_e2sfca)
+
+plot_e2sfca <- map %>%
+  addControl("Pediatrics Per 1,000 People (enhanced 2-Step Floating Catchment Area)", "topright") %>%
+  addLegend("bottomright", pal, population$providers_e2sfca, opacity = .7) %>%
+  addPolygons(
+    fillColor = pal(population$providers_e2sfca), fillOpacity = .7, weight = 1, color = "#000",
+    highlightOptions = highlightOptions(color = "#fff"), group = "Access",
+    label = paste0(
+      "GEOID: ", population$GEOID, ", Population Ages 0-17: ", population$population,
+      ", Per 1k People: ", round(population$providers_e2sfca, 4), ", In Region: ",
+      round(population$population * population$providers_e2sfca / 1000, 4)
+    )
+  ) %>% addPolylines(data = shape_counties_dmv, color = "black", opacity = 1, weight = 2.5) 
+
+```
+## 3-step
+```{r}
+population$providers_3sfca <- catchment_ratio(
+  population, provider, traveltimes, "gaussian", normalize_weight = TRUE, scale = 20,
+  consumers_value = "pediatric_pop", providers_id = "ID", providers_value = "doctors", verbose = TRUE
+) * 1000
+
+pal <- colorBin("RdYlBu", population$providers_3sfca)
+
+plot_3sfca <- map %>%
+  addControl("Pediatrics Per 1,000 People (3-Step Floating Catchment Area)", "topright") %>%
+  addLegend("bottomright", pal, population$providers_3sfca, opacity = .7) %>%
+  addPolygons(
+    fillColor = pal(population$providers_3sfca), fillOpacity = .7, weight = 1, color = "#000",
+    highlightOptions = highlightOptions(color = "#fff"), group = "Access",
+    label = paste0(
+      "GEOID: ", population$GEOID, ", Population Ages 0-17: ", population$population,
+      ", Per 1k People: ", round(population$providers_3sfca, 4), ", In Region: ",
+      round(population$population * population$providers_3sfca / 1000, 4)
+    )
+  ) %>% addPolylines(data = shape_counties_dmv, color = "black", opacity = 1, weight = 2.5) 
+```
+#plot summary
+```{r}
+plot_2sfca
+plot_e2sfca
+plot_3sfca
+```
+
+
+
