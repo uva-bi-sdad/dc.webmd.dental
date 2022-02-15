@@ -24,7 +24,7 @@ dataset:
   geospatial:
     geographicCoverage:
       country: "United States"
-      state: "Virginia"
+      state: "Virginia, District of Columbia, Maryland"
     geographicUnit:
       - "Block Group"
 ---
