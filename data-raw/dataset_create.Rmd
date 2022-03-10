@@ -5,33 +5,28 @@ date: "11/18/2021"
 output: html_document
 dataset:
   citation:
-      title: "Social Data Commons: your title here"
+      title: "Social Data Commons: Health, Behavior, Diet: Dentists Access Scores"
       subtitle: ""
-      dsDescriptionValue: "Virginia Standards of Learning Test Scores collected by the Virginia Department of Education (VDOE)"
+      dsDescriptionValue: "Dentists Access Scores given by the Floating Catchment Areas for the National Capital Region NCR"
       subject: "Social Sciences (Ex: Education, Politics, Sociology, Economics, Psychology)"
-      productionDate: "2021-11-17"
-      timePeriodCoveredStart: "2015-01-01"
-      timePeriodCoveredEnd: "2021-01-01"
+      productionDate: "2022-02-15"
+      timePeriodCoveredStart: "2021-01-01"
+      timePeriodCoveredEnd: "2021-12-31"
       dataSources:
         - "ACS"
-        - "County Health Rankings"
+        - "WebMD"
       author:
-        - authorName: "Schroeder, Aaron"
+        - authorName: "Montalvo, Cesar"
           authorAffiliation: "Univeristy of Virginia"
-        - authorName: "Charankevich, Hanna"
-          authorAffiliation: "Univeristy of Virginia"
-        - authorName: "Niagra, Bob"
-          authorAffiliation: "Univeristy of Waterloo"
       datasetContact:
         - datasetContactEmail: "ads7fg@virginia.edu"
           datasetContactName: "Schroeder, Aaron"
   geospatial:
     geographicCoverage:
       country: "United States"
-      state: "Virginia"
+      state: "Virginia, District of Columbia, Maryland"
     geographicUnit:
-      - "State Health District"
-      - "County"
+      - "Block Group"
 ---
 
 ```{r setup, include=FALSE}
