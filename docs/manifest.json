@@ -1,0 +1,54 @@
+{
+  "name": "dc.webmd.dental",
+  "data": [
+    {
+      "name": "dentists_acccess_scores",
+      "variables": ["population", "dent_2sfca", "dent_e2sfca", "dent_3sfca"],
+      "file": "dmv_bg_2021_dentists_acccess_scores.csv.xz",
+      "size": 69568,
+      "md5": "28175672a129e6196e7a9280abedef99"
+    },
+    {
+      "name": "acccess_scores_dentists",
+      "variables": ["dent_pop_cnt", "dent_cnt", "dent_near_10_mean", "dent_near_10_median", "dent_2sfca", "dent_e2sfca", "dent_3sfca"],
+      "file": "dmv_cttrbg_webmd_2021_acccess_scores_dentists.csv.xz",
+      "size": 171216,
+      "md5": "441ba2449e694ded57e9f9735075f898"
+    },
+    {
+      "name": "access_scores_dentists",
+      "variables": ["dent_pop_cnt", "dent_cnt", "dent_near_10_mean", "dent_near_10_median", "dent_2sfca", "dent_e2sfca", "dent_3sfca"],
+      "file": "dmv_cttrbg_webmd_2021_access_scores_dentists.csv.xz",
+      "size": 171216,
+      "md5": "441ba2449e694ded57e9f9735075f898"
+    },
+    {
+      "name": "access_scores_dentists",
+      "variables": ["dent_pop_cnt", "dent_cnt", "dent_near_10_mean", "dent_near_10_median", "dent_2sfca", "dent_e2sfca", "dent_3sfca"],
+      "file": "va_hdcttrbg_webmd_2021_access_scores_dentists.csv.xz",
+      "size": 428224,
+      "md5": "cab8a5830904f36d21e9a65b2210461a"
+    }
+  ],
+  "distributions": {
+    "dataverse": {
+      "id": 55844,
+      "doi": "doi:10.18130/V3/ZEEF9J",
+      "server": "https://dataverse.lib.virginia.edu/",
+      "data": [
+        {
+          "file": "dmv_cttrbg_webmd_2021_access_scores_dentists.csv.xz",
+          "id": 55980,
+          "size": 171216,
+          "md5": "441ba2449e694ded57e9f9735075f898"
+        },
+        {
+          "file": "va_hdcttrbg_webmd_2021_access_scores_dentists.csv.xz",
+          "id": 56001,
+          "size": 428224,
+          "md5": "cab8a5830904f36d21e9a65b2210461a"
+        }
+      ]
+    }
+  }
+}
